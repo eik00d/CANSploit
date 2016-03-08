@@ -1,6 +1,6 @@
 from libs.module import *
-from libs.isotp import *
 from libs.uds import *
+
 
 class gen_ping(CANModule):
     name = "Sending CAN pings"

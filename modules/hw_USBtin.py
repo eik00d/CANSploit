@@ -105,7 +105,7 @@ class hw_USBtin(CANModule):
 
         self.do_stop(params)
         # data=self.readAll()
-        self._currentSpeed = int(params.get('speed',500))
+        self._currentSpeed = int(params.get('speed', 500))
 
         # print str(self._serialPort)
         self.dprint(1, "PORT: " + self._COMPort)

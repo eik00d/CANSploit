@@ -150,8 +150,8 @@ class UserInterface:
                         #                    try:
                         text = self.CANEngine.call_module(_mod, str(_paramz))
                         print(text)
-                    #                    except Exception as e:
-                    #                        print "CMD input error: "+str(e)
+                        #                    except Exception as e:
+                        #                        print "CMD input error: "+str(e)
 
             elif input == 'help' or input == 'h':
                 print

@@ -84,8 +84,8 @@ class mod_stat(CANModule):
         for fid, lst in self._bodyList.iteritems():
             message_iso = ISOTPMessage(fid)
             for (lenX, msg, bus, mod), cnt in lst.iteritems():
-                ret = message_iso.add_can(CANMessage.init_data(fid, len(msg), [struct.unpack("B", x)[0] for x in msg]))
-                #if ret < 0 or message_iso.message_length < 1:
+                ret = message_iso.add_can(CANMessage.init_data(fid, len(msg), [struct.unpack("B", x)[0] for x in msg])) # TODO NEED RET?
+                # if ret < 0 or message_iso.message_length < 1:
                 #     message_iso = ISOTPMessage(fid)
                 if message_iso.message_finished:
                     if fid not in self.ISOList:
@@ -104,15 +104,16 @@ class mod_stat(CANModule):
                 if service in UDSMessage.services_base:
                     for sub in UDSMessage.services_base[service]:
                         if sub.keys()[0] == body['sub']:
-                            text = " ("+sub.values()[0]+") "
+                            text = " (" + sub.values()[0] + ") "
                     if text == " (N/A) ":
-                        text = " ("+UDSMessage.services_base[service][0].values()[0]+") "
+                        text = " (" + UDSMessage.services_base[service][0].values()[0] + ") "
                 if body['status'] == 1:
                     data = ''.join(struct.pack("!B", b) for b in body['response']['data'])
-                    ret_str += "\n\tID: " + str(fid) + " Service: " + str(hex(service)) + " Sub: " + str(hex(body['sub'])) + text + "\n\t\tResponse: " + data.encode('hex') + " ASCII: " + data
+                    ret_str += "\n\tID: " + str(fid) + " Service: " + str(hex(service)) + " Sub: " + str(
+                        hex(body['sub'])) + text + "\n\t\tResponse: " + data.encode('hex') + " ASCII: " + data
                 elif body['status'] == 2:
-                    ret_str += "\n\tID: " + str(fid) + " Service: " + str(hex(service)) + " Sub: " + str(hex(body['sub'])) + text + "\n\t\tError: " + body['response']['error']
-
+                    ret_str += "\n\tID: " + str(fid) + " Service: " + str(hex(service)) + " Sub: " + str(
+                        hex(body['sub'])) + text + "\n\t\tError: " + body['response']['error']
 
         return ret_str
 
@@ -259,9 +260,9 @@ class mod_stat(CANModule):
                                 " (BUS: " + str(can_msg.bus) + ")")
             else:
                 if (can_msg.CANFrame.frame_length,
-                        can_msg.CANFrame.frame_raw_data,
-                        can_msg.bus,
-                        can_msg.CANFrame.frame_ext) not in self._bodyList[can_msg.CANFrame.frame_id]:
+                    can_msg.CANFrame.frame_raw_data,
+                    can_msg.bus,
+                    can_msg.CANFrame.frame_ext) not in self._bodyList[can_msg.CANFrame.frame_id]:
                     self._bodyList[can_msg.CANFrame.frame_id][(
                         can_msg.CANFrame.frame_length,
                         can_msg.CANFrame.frame_raw_data,

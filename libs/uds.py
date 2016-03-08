@@ -123,8 +123,6 @@ class UDSMessage:
         0x7F: 'Service not supported in active session'
     }
 
-
-
     def __init__(self, _shift = 0x08):  # Init Session
         self.sessions = {}
         self.shift = _shift
