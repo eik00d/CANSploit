@@ -1,0 +1,12 @@
+.scenario {
+  position: relative;
+}
+
+.step {
+  box-sizing: border-box;
+  position: absolute;
+}
+
+.step.current {
+  background-color: lightsteelblue;
+}

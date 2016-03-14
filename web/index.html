@@ -1,33 +1,33 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html><head>
-<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>CANToolz WEB Prototype</title>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CANToolz WEB Console</title>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/main.css" />
+  </head>
 
-<script src="js/jquery-1.12.1.min.js"></script>
-<script src="js/console.js"></script></head>
-<body style="background-image: url(img/background.png);" onload="console.start()">
-<div style="font-size: 10pt; font-family: monospace; white-space: pre; color: rgb(255, 255, 255); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; widows: 1; word-spacing: 0px;" class="fig"><pre id="taag_font_Standard" class="fig" contenteditable="true" style="font-size: 10pt; font-family: monospace; white-space: pre; margin-top: 15px; margin-bottom: 15px; float: left;">   ____    _    _   _ _____           _     <br>  / ___|  / \  | \ | |_   _|__   ___ | |____<br> | |     / _ \ |  \| | | |/ _ \ / _ \| |_  /<br> | |___ / ___ \| |\  | | | (_) | (_) | |/ / <br>  \____/_/   \_\_| \_| |_|\___/ \___/|_/___|<br>                                            </pre><div style="clear: both;"></div></div><div style="color: rgb(0, 0, 0); font-family: Verdana,arial,helvetica,sans-serif; font-size: 12px; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; widows: 1; word-spacing: 0px;"><br class="Apple-interchange-newline"></div><br>
-<br>
+  <body class="application" onload="main();">
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12">
+          <h1>
+            <a class="loop-action btn btn-lg btn-success">CANToolz</a>
+            <small>config_name.py</small>
+          </h1>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-8">
+          <div class="scenario"></div>
+        </div>
+        <div class="controls col-xs-4">
+          Menu
+        </div>
+      </div>
+    </div>
 
 
-<div style="color: rgb(0, 0, 0); font-family: Verdana,arial,helvetica,sans-serif; font-size: 12px; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; widows: 1; word-spacing: 0px;"><br class="Apple-interchange-newline">
-</div>
-
-<br>
-<br>
-<br>
-<br>
-<img id="led" style="width: 57px; height: 54px;" alt="Start/Stop loop" src="img/stp.png" onclick="console.doStartStop()"><br><br>
-<font color="#FFFFDA" size="5">START</font>
-<br>
-<br>
-<table style="width: 100%; text-align: left; margin-left: auto; margin-right: auto;" id="tbl" border="1" cellpadding="2" cellspacing="2">
-<tbody>
-<tr>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<br>
-<br>
-</body></html>
+    <script src="//d3js.org/d3.v3.min.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
