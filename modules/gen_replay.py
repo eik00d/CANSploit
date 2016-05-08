@@ -28,12 +28,12 @@ class gen_replay(CANModule):
     _replay = False
     _sniff = False
 
-    def get_status(self):
+    def get_status(self, def_in, i = 0):
         return "Current status: " + str(self._active) + "\nSniff mode: " + str(self._sniff) +\
                "\nReplay mode: " + str(self._replay) +"\nFrames in memory: " + str(len(self.CANList)) +\
                "\nFrames in queue: " + str(self._num2 - self._num1)
 
-    def cmd_load(self, name):
+    def cmd_load(self, def_in, name):
         try:
             with open(name.strip(), "r") as ins:
                 for line in ins:
@@ -63,7 +63,7 @@ class gen_replay(CANModule):
             self._fname = "mod_replay.save"
 
         if 'load_from' in params:
-            self.cmd_load(params['load_from'])
+            self.cmd_load(0, params['load_from'])
 
         self._cmdList['g'] = ["Enable/Disable sniff mode to collect packets", 0, "", self.sniff_mode, True]
         self._cmdList['p'] = ["Print count of loaded packets", 0, "", self.cnt_print, True]
@@ -73,7 +73,7 @@ class gen_replay(CANModule):
         self._cmdList['c'] = ["Clean loaded table", 0, "", self.clean_table, True]
 
 
-    def clean_table(self):
+    def clean_table(self, def_in):
         self.CANList = []
         self._last = 0
         self._full = 1
@@ -81,7 +81,7 @@ class gen_replay(CANModule):
         self._num2 = 0
         return "Replay buffer is clean!"
 
-    def save_dump(self, input_params):
+    def save_dump(self, def_in, input_params):
         fname = self._fname
         indexes = input_params.split(',')[0].strip()
         if len(input_params.split(',')) > 1:
@@ -106,7 +106,7 @@ class gen_replay(CANModule):
                 ret = "Not saved. Error: " + str(e)
         return ret
 
-    def sniff_mode(self):
+    def sniff_mode(self, def_in):
         self._replay = False
         if self._sniff:
             self._sniff = False
@@ -118,7 +118,7 @@ class gen_replay(CANModule):
             self._cmdList['d'][4] = False
         return str(self._sniff)
 
-    def replay_mode(self, indexes = None):
+    def replay_mode(self, def_in, indexes = None):
         self._replay = False
         self._sniff = False
         if not indexes:
@@ -137,7 +137,7 @@ class gen_replay(CANModule):
 
         return "Replay mode changed to: " + str(self._replay)
 
-    def cnt_print(self):
+    def cnt_print(self, def_in):
         ret = str(len(self.CANList))
         return "Loaded packets: " + ret
 
@@ -153,12 +153,14 @@ class gen_replay(CANModule):
                     can_msg.CANFrame = self.CANList[self._num1]
                     self._num1 += 1
                     can_msg.CANData = True
+                    can_msg.bus = self._bus
                     self._last += 1
                     self._status = self._last/(self._full/100.0)
             else:
                 can_msg.CANFrame = self.CANList[self._num1]
                 self._num1 += 1
                 can_msg.CANData = True
+                can_msg.bus = self._bus
                 self._last += 1
                 self._status = self._last/(self._full/100.0)
 

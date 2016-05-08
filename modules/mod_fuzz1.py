@@ -57,6 +57,8 @@ class mod_fuzz1(CANModule):
         if can_msg.CANData and can_msg.CANFrame.frame_type == CANMessage.DataFrame:
             if can_msg.CANFrame.frame_id in args.get('fuzz', []) and 'byte' in args:
                 can_msg = self.do_fuzz(can_msg, args['byte'])
+                can_msg.bus = self._bus
             elif 'nfuzz' in args and can_msg.CANFrame.frame_id not in args.get('nfuzz', []) and 'byte' in args:
                 can_msg = self.do_fuzz(can_msg, args['byte'])
+                can_msg.bus = self._bus
         return can_msg

@@ -49,8 +49,8 @@ Then use browser and connect to http://localhost:4444
 P.S. of course we are working on supporting other types of I/O hardware and modules. Please join us!
 Main idea that community can produce different modules that can be useful for all of us 8)
 
-
-![](https://4.bp.blogspot.com/-yFfoB__yfhQ/VxZMaaSfY6I/AAAAAAAAAQA/G8p056Vz36AYoZj9RGUKwCrjbkrUWnBeQCLcB/s1600/h1.png)
+Sniffing and UDS detection example, screenshot:
+![](https://1.bp.blogspot.com/-_SHafeN7ku0/Vyp4K_Lf_sI/AAAAAAAAAQ4/bVoDm-oN7C4v9t5fg0laAMqxQkEKfwUhQCLcB/s1600/vw2.png)
 
 ## Dependencies
     python 3.4

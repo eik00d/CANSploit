@@ -44,17 +44,38 @@ class CANSploit:
     # Main loop with two pipes
     def main_loop(self):
         # Run until STOP
+        error_on_bus = {}
+        error = False
         while not self._stop.is_set():
             self._pipes = {}
+            i = 0
             for name, module, params in self._enabledList:  # Each module
                 #  Handle CAN message
+
                 if module.is_active:
                     module.thr_block.wait(3)
                     module.thr_block.clear()
                     if params['pipe'] not in self._pipes:
                         self._pipes[params['pipe']] = CANSploitMessage()
-                    self._pipes[params['pipe']] = module.do_effect(self._pipes[params['pipe']], params)  # doEffect on CANMessage
+
+                    if error and error_on_bus.get(i, False):
+                        self._pipes[params['pipe']] = module.do_effect(self._pipes[params['pipe']], params) # If error, try to fix
+                    elif not error:
+                        self._pipes[params['pipe']] = module.do_effect(self._pipes[params['pipe']], params) # doEffect on CANMessage
+
+                    if self._pipes[params['pipe']].debugData and self._pipes[params['pipe']].debugText.get('do_not_send', False):
+                        error_on_bus[i] = True
+                        error = True
+                        module.dprint(0,"BUS ERROR detected")
+                        self._pipes[params['pipe']].debugData = False
+                    elif self._pipes[params['pipe']].debugData and self._pipes[params['pipe']].debugText.get('please_send', False):
+                        error_on_bus[i] = False
+                        error = False
+                        self._pipes[params['pipe']].debugData = False
+                        module.dprint(0,"BUS ERROR fixed")
+                    i += 1
                     module.thr_block.set()
+
 
                     # Here when STOP
         for name, module, params in self._enabledList:
@@ -76,6 +97,7 @@ class CANSploit:
 
         for name, module, params in self._enabledList:
             module.do_start(params)
+            params['!error_on_bus'] = False
             module.thr_block.set()
 
         self._thread = threading.Thread(target=self.main_loop)

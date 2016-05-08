@@ -85,11 +85,11 @@ class WebConsole(http.server.SimpleHTTPRequestHandler):
 
                         mode = 1 if self.can_engine.get_modules_list()[int(path_parts[3])][1].is_active else 0
                         if mode == 1:
-                            self.can_engine.get_modules_list()[int(path_parts[3])][1].do_activate(0)
+                            self.can_engine.get_modules_list()[int(path_parts[3])][1].do_activate(0, 0)
                         self.can_engine.get_modules_list()[int(path_parts[3])][1].do_stop(paramz)
                         self.can_engine.get_modules_list()[int(path_parts[3])][1].do_start(paramz)
                         if mode == 1:
-                            self.can_engine.get_modules_list()[int(path_parts[3])][1].do_activate(1)
+                            self.can_engine.get_modules_list()[int(path_parts[3])][1].do_activate(0, 1)
 
                         new_params = self.can_engine.get_module_params(int(path_parts[3]))
                         body = json.dumps(new_params, ensure_ascii=False)
@@ -337,11 +337,11 @@ class UserInterface:
 
                         mode = 1 if self.CANEngine.get_modules_list()[module][1].is_active else 0
                         if mode == 1:
-                            self.CANEngine.get_modules_list()[module][1].do_activate(0)
+                            self.CANEngine.get_modules_list()[module][1].do_activate(0, 0)
                         self.CANEngine.get_modules_list()[module][1].do_stop(paramz)
                         self.CANEngine.get_modules_list()[module][1].do_start(paramz)
                         if mode == 1:
-                            self.CANEngine.get_modules_list()[module][1].do_activate(1)
+                            self.CANEngine.get_modules_list()[module][1].do_activate(0, 1)
                     except Exception as e:
                         print(("Edit error: " + str(e)))
                 else:

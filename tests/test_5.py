@@ -1,9 +1,9 @@
 
 #  Load modules
 load_modules = {
-    'gen_ping'  : {'bus': 31},
+    'gen_ping'  : {'bus': 'Default'},
     'mod_stat'    : {'debug': 2},
-    'gen_replay'   : {'load_from': 'tests/test_responses.save'}
+    'gen_replay'   : {'load_from': 'tests/test_responses.save', 'bus':'Default'}
 }
 
 

@@ -80,12 +80,14 @@ class gen_fuzz(CANModule):
                     self.last = time.clock()
                     can_msg.CANFrame = self.queue_messages.pop()
                     can_msg.CANData = True
+                    can_msg.bus = self._bus
                     self._last += 1
                     self._status = self._last/(self._full/100.0)
 
             else:
                 can_msg.CANFrame = self.queue_messages.pop()
                 can_msg.CANData = True
+                can_msg.bus = self._bus
                 self._last += 1
                 self._status = self._last/(self._full/100.0)
 

@@ -24,10 +24,10 @@ class CANModule:
     def is_active(self):
         return self._active
 
-    def get_status(self):
+    def get_status(self, def_in = 0):
         return "Current status: " + str(self._active)
 
-    def do_activate(self, mode = -1):
+    def do_activate(self, def_in = 0, mode = -1):
         if mode == -1:
             self._active = not self._active
         elif mode == 0:
@@ -48,10 +48,12 @@ class CANModule:
         if string[0] in self._cmdList:
             cmd = self._cmdList[string[0]]
             if cmd[4]:
+                if len(cmd) == 5:
+                    cmd.append(0)
                 if len(string.strip()) > 2:
-                    ret = cmd[3](string[2:])
+                    ret = cmd[3](cmd[5],string[2:])
                 else:
-                    ret = cmd[3]()
+                    ret = cmd[3](cmd[5])
             else:
                 ret = "Error: command is disabled!"
         self.thr_block.set()
@@ -69,7 +71,7 @@ class CANModule:
     def __init__(self, params):
 
         self.DEBUG = int(params.get('debug', 0))
-        self._bus = params.get('bus', "module")
+        self._bus = params.get('bus', self.__class__.__name__)
         self._active = False if params.get('active') in ["False", "false", "0", "-1"] else True
         self._cmdList = collections.OrderedDict()  # Command list (doInit section)
         self._cmdList['S'] = ["Current status", 0, "", self.get_status, True]

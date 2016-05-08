@@ -37,7 +37,7 @@ class hw_USBtin(CANModule):
 
     _bus = "USBTin"
 
-    def get_status(self):
+    def get_status(self, def_in):
         return "Current status: " + str(self._active) + "\nCurrent SPEED: " + str(self._currentSpeed) + "\nPORT: " + self._COMPort
 
     def get_info(self):  # Read info
@@ -54,12 +54,14 @@ class hw_USBtin(CANModule):
         return out
 
     def do_stop(self, params):  # disable reading
-        self._serialPort.write(b"C\r")
+        if self._run:
+            self._serialPort.write(b"C\r")
+            self._run = False
         time.sleep(1)
         self.read_all()
-        self._run = False
 
-    def set_speed(self, speed):
+
+    def set_speed(self, def_in, speed):
         sjw_user = 3
         ## This code ported from here:
         # https://www.kvaser.com/wp-content/themes/kvaser/inc/vc/js/bittiming.js
@@ -148,9 +150,12 @@ class hw_USBtin(CANModule):
             return "Speed: " + str(self._currentSpeed)
 
     def do_start(self, params):  # enable reading
-        self._serialPort.write(b"O\r")
+        if not self._run:
+            self._serialPort.write(b"O\r")
+            self._run = True
+            self.wait_for = False
         time.sleep(1)
-        self._run = True
+
 
     def init_port(self):
         try:
@@ -191,8 +196,13 @@ class hw_USBtin(CANModule):
             self.dprint(0, 'No port in config!')
             return 0
 
+        self._restart = bool(params.get('auto_activate', True))
+        self.act_time = float(params.get('auto_activate', 5.0))
+        self.last = time.clock()
+        self.wait_for = False
+        self._run = False
         self.do_stop({})
-        self.set_speed(str(params.get('speed', '500')) + ", " + str(params.get('sjw', '3')))
+        self.set_speed(0, str(params.get('speed', '500')) + ", " + str(params.get('sjw', '3')))
         # print str(self._serialPort)
         self.dprint(1, "PORT: " + self._COMPort)
         self.dprint(1, "Speed: " + str(self._currentSpeed))
@@ -201,7 +211,7 @@ class hw_USBtin(CANModule):
         self._cmdList['S'] = ["Set device speed (kBaud) and SJW level(optional)", 1, " <speed>,<SJW> ", self.set_speed, True]
         self._cmdList['t'] = ["Send direct command to the device, like t0010411223344", 1, " <cmd> ", self.dev_write, True]
 
-    def dev_write(self, data):
+    def dev_write(self, def_in, data):
         self.dprint(1, "CMD: " + data)
         self._serialPort.write(data.encode("ISO-8859-1") + b"\r")
         return ""
@@ -213,6 +223,26 @@ class hw_USBtin(CANModule):
             self.do_write(can_msg)
         else:
             self.dprint(1, 'Command ' + args['action'] + ' not implemented 8(')
+
+        if self._restart:
+                if self.wait_for and can_msg.debugData and can_msg.debugText['text'][0] == "F" and len(can_msg.debugText['text']) > 2:
+                    error = int(can_msg.debugText['text'][1:3],16)
+                    self.dprint(1,"BUS ERROR:" + hex(error))
+                    if error & 8: # Fix for BMW CAN where it could be overloaded
+                       self.dev_write(0, "C")
+                       time.sleep(0.4)
+                       self.dev_write(0, "O")
+                       can_msg.debugText['do_not_send'] = True
+                    else:
+                       can_msg.debugText['please_send'] = True
+                    self.wait_for = False
+
+                elif time.clock() - self.last >= self.act_time and not self.wait_for:
+                    self.dev_write(0, "F")
+                    self.wait_for = True
+                    self.last = time.clock()
+
+
         return can_msg
 
     def do_read(self, can_msg):
@@ -264,6 +294,7 @@ class hw_USBtin(CANModule):
                     else:
                         can_msg.debugData = True
                         can_msg.debugText = {'text': data.decode("ISO-8859-1")}
+                        self.dprint(1, "USBtin DREAD: " + data.decode("ISO-8859-1"))
 
                     self.dprint(2, "USBtin READ: " + data.decode("ISO-8859-1"))
 

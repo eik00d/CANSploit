@@ -42,4 +42,12 @@ class mod_firewall(CANModule):
                 can_msg.CANData = False
                 self.dprint(2, "Message " + str(can_msg.CANFrame.frame_id) + " has been blocked(BB) (BUS = " + str(
                     can_msg.bus) + ")")
+            if 'black_bus' in args and can_msg.bus.strip() in args.get('black_body',[]):
+                can_msg.CANData = False
+                self.dprint(2, "Message " + str(can_msg.CANFrame.frame_id) + " has been blocked(BBus) (BUS = " + str(
+                    can_msg.bus) + ")")
+            elif 'white_bus' in args and can_msg.bus.strip() not in args.get('white_bus',[]):
+                can_msg.CANData = False
+                self.dprint(2, "Message " + str(can_msg.CANFrame.frame_id) + " has been blocked(WBus) (BUS = " + str(
+                    can_msg.bus) + ")")
         return can_msg

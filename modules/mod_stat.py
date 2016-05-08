@@ -28,7 +28,7 @@ class mod_stat(CANModule):
     _active = True
     version = 1.0
 
-    def get_status(self):
+    def get_status(self, def_in = 0):
         return "Current status: " + str(self._active) + "\nSniffed frames (overall): " + str(self.get_num(-1))+"\nCurrent BUFF: index - " + str(self._index) + " name - " + self.all_frames[self._index]['name'] + \
                "\nAll buffers: \n\t" + \
             '\n\t'.join([buf['name'] + "\n\t\tindex: " + str(cnt) + ' sniffed: ' + str(len(buf['buf'])) for buf,cnt in zip(self.all_frames,range(0,len(self.all_frames)))])
@@ -64,7 +64,7 @@ class mod_stat(CANModule):
         self._cmdList['d'] = ["Dump STAT (all buffers) in CSV format", 1, " <filename>, [index]", self.do_dump_csv, True]
         self._cmdList['g'] = ["Get DELAY value for gen_ping/gen_fuzz (EXPERIMENTAL)",1,"<Bus SPEED in Kb/s>", self.get_delay, True]
 
-    def get_delay(self, speed):
+    def get_delay(self, def_in, speed):
         _speed = float(speed)*1024
         curr_1 = len(self.all_frames[self._index]['buf'])
         time.sleep(3)
@@ -74,7 +74,7 @@ class mod_stat(CANModule):
         delay = 1/int((_speed - speed)/80)
         return "Avrg. delay: " + str(delay)
 
-    def change_shift(self, val):
+    def change_shift(self, def_in, val):
         if val.strip()[0:2] == '0x':
             value = int(val,16)
         else:
@@ -82,7 +82,7 @@ class mod_stat(CANModule):
         self.shift = value
         return "UDS shift: " + hex(self.shift)
 
-    def do_add_meta_descr_data(self, input_params):
+    def do_add_meta_descr_data(self, def_in, input_params):
         try:
             fid, body, descr = input_params.split(',')
             if fid.strip().find('0x') == 0:
@@ -92,7 +92,7 @@ class mod_stat(CANModule):
             if 'description' not in self.meta_data:
                 self.meta_data['description'] = {}
 
-            self.meta_data['description'][(num_fid, body.strip().upper())] = descr
+            self.meta_data['description'][(num_fid, body.strip().upper())] = descr.strip()
 
             return "Description data has been added"
         except Exception as e:
@@ -107,7 +107,7 @@ class mod_stat(CANModule):
         return "  "
 
 
-    def do_load_meta(self, filename):
+    def do_load_meta(self, def_in, filename):
         try:
             data = ""
             with open(filename.strip(), "r") as ins:
@@ -119,7 +119,7 @@ class mod_stat(CANModule):
             return "Can't load META: " + str(e)
         return "Loaded META from " + filename
 
-    def do_save_meta(self, filename):
+    def do_save_meta(self, def_in, filename):
         try:
             _file = open(filename.strip(), 'w')
             _file.write(str(self.meta_data))
@@ -239,7 +239,7 @@ class mod_stat(CANModule):
 
         return frg_list
 
-    def do_anal(self, format = "ALL"):
+    def do_anal(self, def_in, format = "ALL"):
 
         format.upper()
 
@@ -324,7 +324,7 @@ class mod_stat(CANModule):
 
         return ret_str
 
-    def search_id(self, idf):
+    def search_id(self, def_in, idf):
         idf = int(idf) if not idf.strip()[0:2] == '0x' else int(idf,16)
         table = "Search for " + hex(idf) + "\n"
         rows = []
@@ -347,10 +347,10 @@ class mod_stat(CANModule):
         table += "\n"
         return table
 
-    def print_dump_diff(self,name):
+    def print_dump_diff(self, def_in,name):
         return self.print_dump_diff_(name, 0)
 
-    def print_dump_diff_id(self,name):
+    def print_dump_diff_id(self, def_in,name):
         return self.print_dump_diff_(name, 1)
 
     def print_dump_diff_(self, name, mode = 0):
@@ -391,7 +391,7 @@ class mod_stat(CANModule):
             return str(e)
         return "Saved into " + name.strip()
 
-    def do_dump_replay(self, name):
+    def do_dump_replay(self, def_in, name):
         inp = name.split(",")
         if len(inp) == 2:
             name = inp[0].strip()
@@ -410,7 +410,7 @@ class mod_stat(CANModule):
         return "Saved into " + name.strip()
 
 
-    def do_dump_csv(self, name):
+    def do_dump_csv(self, def_in, name):
         inp = name.split(",")
         if len(inp) == 2:
             name = inp[0].strip()
@@ -437,7 +437,7 @@ class mod_stat(CANModule):
             return str(e)
         return "Saved into " + name.strip()
 
-    def print_diff(self, inp = ""):
+    def print_diff(self, def_in, inp = ""):
         inp = inp.split(",")
         if len(inp) == 3:
             idx1 = int(inp[0])
@@ -453,7 +453,7 @@ class mod_stat(CANModule):
             rang = 8 * 256
         return self.print_diff_orig(0, idx1, idx2, rang)
 
-    def print_diff_id(self, inp = ""):
+    def print_diff_id(self, def_in, inp = ""):
         inp = inp.split(",")
         if len(inp) != 2:
             idx2 =  self._index
@@ -497,14 +497,14 @@ class mod_stat(CANModule):
         table += "\n"
         return table
 
-    def new_diff(self, name = ""):
+    def new_diff(self, def_in, name = ""):
         _name = name.strip()
         _name = _name if _name != "" else "buffer_" + str(len(self.all_frames)-1)
         self._index += 1
         self.all_frames.append({'name':_name,'buf':[]})
         return "New buffer  " + _name + ", index: " + str(self._index) + " enabled and active"
 
-    def do_print(self, index = "-1"):
+    def do_print(self, def_in, index = "-1"):
         _index = int(index)
         temp_buf = []
         if _index == -1:
@@ -532,7 +532,7 @@ class mod_stat(CANModule):
         table += ""
         return table
 
-    def do_clean(self):
+    def do_clean(self, def_in):
         self.all_frames = [{'name':'start_buffer','buf':[]}]
         self._index = 0
         return "Buffers cleaned!"

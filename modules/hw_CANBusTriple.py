@@ -43,7 +43,7 @@ class hw_CANBusTriple(CANModule):
 
     id = 1
 
-    def get_status(self):
+    def get_status(self, def_in):
         return "Current status: " + str(self._active) + "\nPORT: " + self._COMPort
 
     def read_all(self):
@@ -232,7 +232,7 @@ class hw_CANBusTriple(CANModule):
         self._cmdList['t'] = ["Send direct command to the device, like 02010011112233440000000008", 1, " <cmd> ",
                               self.dev_write, True]
 
-    def dev_write(self, data):
+    def dev_write(self, def_in, data):
         self.dprint(1, "CMD: " + data)
         self._serialPort.write(bytes.fromhex(data))
         return ""
