@@ -115,7 +115,7 @@ class ISOTPMessage:
         if _length < 8:
             padding_data = []
             padding_length = 0
-            if padding:
+            if padding is not None:
                 padding_data = [int(padding)] * (7 - _length)
                 padding_length = 8 - _length - 1
             can_msg_list.append(CANMessage.init_data(fid, _length + 1 + padding_length, [_length] + data[:_length] + padding_data))  # Single
